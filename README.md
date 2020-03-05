@@ -1,6 +1,5 @@
 # Vue Google Places Autocomplete
 
-
 <p align="center">
   <a href="https://npmcharts.com/compare/vue-google-places?minimal=true">
     <img src="http://img.shields.io/npm/dm/vue-google-places.svg">
@@ -16,6 +15,9 @@
   </a>
 </p>
 
+## Note that this is a fork from the original vue-google-places
+
+The original can be found here: <https://github.com/yariksav/vue-google-places>
 
 ## Install
 
@@ -24,7 +26,7 @@ import VueGooglePlaces from 'vue-google-places'
 Vue.use(VueGooglePlaces)
 ```
 
->This module will load all needed google librarys automatically at first usage
+This module will load all needed Google libraries automatically at first usage
 
 ## Use
 
@@ -50,25 +52,29 @@ Vue.use(VueGooglePlaces)
 |types|String, Array| - |Google places types [See google docs (Table 3)](https://developers.google.com/places/supported_types)
 
 Available types:
-  - geocode
-  - address
-  - establishment
-  - (regions)
-  - (cities)
+
+- geocode
+- address
+- establishment
+- (regions)
+- (cities)
 
 ## Events
 
- - `placechanged`: Place - when user has selected new place
- - `input`: String - name of selected place
- - `noresult`: Place - when place has changed but details was not found
+- `placechanged`: Place - when user has selected new place
+- `input`: String - name of selected place
+- `noresult`: Place - when place has changed but details was not found
 
 ## Slots
- - `default` - in this slot you can put your own input component
+
+- `default` - in this slot you can put your own input component
 
 ## Other frameworks
-  This component implemented in such frameworks:
+
+This component implemented in such frameworks:
 
 ### Vuetify
+
 ```js
   import { VuetifyGooglePlaces } from 'vue-google-places'
 ```
@@ -82,11 +88,13 @@ Available types:
     @placechanged="onPlaceChanged"
   />
 ```
+
 > To implement this module in other frameworks - welcome to contribute! Please use VuetifyGooglePlaces as template
 
 ### Implementation with own input component
 
 To use with own input component use default slot. VueGooglePlaces will automatically find html input element
+
 ```js
   import { VueGooglePlaces } from 'vue-google-places'
 ```
