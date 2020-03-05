@@ -1,5 +1,5 @@
 {
-  "name": "vue-google-places",
+  "name": "@waitem/vue-google-places",
   "version": "0.1.6",
   "description": "Vue Google Places Autocomplete",
   "main": "dist/vue-google-places.umd.js",
