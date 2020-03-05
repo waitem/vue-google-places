@@ -18,7 +18,8 @@
     "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/vue-google-places.umd.js",
     "build:es": "rollup --config build/rollup.config.js --format es --file dist/vue-google-places.esm.js",
     "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-google-places.min.js",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "echo \"Warning: no tests specified!\""
   },
   "dependencies": {
     "load-js": "^3.0.3"
