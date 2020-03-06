@@ -1,5 +1,7 @@
 set -e
-echo "Enter release version: "
+echo "Last releases:"
+git tag
+echo "Enter new release version: "
 read VERSION
 
 read -p "Releasing $VERSION - are you sure? (y/n)" -n 1 -r
