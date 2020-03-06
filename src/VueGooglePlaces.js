@@ -21,10 +21,7 @@ const loadModule = (options) => {
 
 export default {
   props: {
-    apiKey: {
-      type: String,
-      required: true
-    },
+    apiKey: String,
     country: String,
     enableGeolocation: Boolean,
     enableGeocode: Boolean,
