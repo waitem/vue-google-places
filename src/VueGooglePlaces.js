@@ -21,16 +21,23 @@ const loadModule = (options) => {
 
 export default {
   props: {
-    apiKey: String,
+    apiKey: {
+      type: String,
+      required: true
+    },
     country: String,
     enableGeolocation: Boolean,
     enableGeocode: Boolean,
+    placeResultFields: [String, Array],
     value: String,
-    version: String,
+    version: {
+      type: String,
+      default: 'weekly'
+    },
     types: [String, Array],
     addressFields: Object
   },
-  data () {
+  data() {
     return {
       geolocateSet: false,
       prepared: false,
@@ -41,25 +48,25 @@ export default {
     }
   },
   computed: {
-    getAppendIcon () {
+    getAppendIcon() {
       return this.currentPlace ? 'close' : this.appendIcon
     }
   },
   watch: {
-    country (newVal) {
+    country(newVal) {
       if (newVal && this.autocomplete) {
         this.autocomplete.componentRestrictions.country = newVal
       }
     },
 
-    types (newVal) {
+    types(newVal) {
       if (newVal) {
         const types = Array.isArray(newVal) ? newVal : [newVal]
         this.autocomplete.setTypes(types)
       }
     }
   },
-  created () {
+  created() {
     // STUB for vue2-google-maps and vue-google-places work together
     // TODO chanhe this to @google/map module in future
     if (typeof this.$gmapApiPromiseLazy === 'function') {
@@ -80,17 +87,17 @@ export default {
       postal_code: 'short_name'
     }, this.addressFields)
   },
-  mounted () {
+  mounted() {
     loadModulePromise.then(() => {
       this.setupGoogle()
     })
   },
   methods: {
-    enableEnterKey (input) {
+    enableEnterKey(input) {
 
       /* Store original event listener */
       const _addEventListener = input.addEventListener
-  
+
       const addEventListenerWrapper = (type, listener) => {
         if (type === "keydown") {
           /* Store existing listener function */
@@ -115,16 +122,16 @@ export default {
         }
         _addEventListener.apply(input, [type, listener])
       }
-  
+
       input.addEventListener = addEventListenerWrapper
     },
-    setupInput () {
+    setupInput() {
       this.element.addEventListener('keydown', (e) => {
         if (e.keyCode === 40) {
           this.hasDownBeenPressed = true;
         }
       })
-    
+
       this.enterPressListener = window.google.maps.event.addDomListener(this.element, 'keydown', (e) => {
         e.cancelBubble = true;
         // If enter key, or tab key
@@ -144,8 +151,33 @@ export default {
         this.hasDownBeenPressed = false
       })
     },
-    setupGoogle () {
+    setupGoogle() {
       const options = {}
+
+      // Specify the fields to return in the places object
+      // See: https://developers.google.com/maps/documentation/javascript/reference/places-widget#AutocompleteOptions.fields
+      // The list of available fields in the place object can be seen here:
+      // https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceResult
+      // If any additional fields are required, they should be specified as an option
+      const PLACE_RESULT_FIELDS = [
+        'formatted_address',
+        'address_components',
+        'geometry',
+        'name'
+      ]
+      options.fields = PLACE_RESULT_FIELDS
+      if (typeof this.placeResultFields === 'string') {
+        if (options.fields.indexOf(this.placeResultFields) !== -1) {
+          options.fields.push(this.placeResultFields)
+        }
+      } else if (Array.isArray(this.placeResultFields)) {
+        for (let i = 0; i < this.placeResultFields.length; i++) {
+          const placeResultField = this.placeResultFields[i]
+          if (options.fields.indexOf(placeResultField) !== -1) {
+            options.fields.push(placeResultField)
+          }
+        }
+      }
 
       if (typeof this.types === 'string') {
         options.types = [this.types]
@@ -179,7 +211,7 @@ export default {
       this.geocoder = new window.google.maps.Geocoder()
       this.geolocate()
     },
-    parsePlace (place) {
+    parsePlace(place) {
       const returnData = {}
 
       if (place.formatted_address !== undefined) {
@@ -205,22 +237,22 @@ export default {
         returnData.latitude = place.geometry.location.lat()
         returnData.longitude = place.geometry.location.lng()
 
-        // additional fields available in google places results
-        returnData.name = place.name
-        returnData.formatted_address = place.formatted_address
-        returnData.photos = place.photos
-        returnData.place_id = place.place_id
+        // additional fields, if specified as a prop
+        // will be available in the 'place' object
+        // so no need to duplicate them in returnData
+        // returnData.photos = place.photos
+        // returnData.place_id = place.place_id
         returnData.place = place
       }
       return returnData
     },
-    changePlace (place) {
+    changePlace(place) {
       this.$emit('placechanged', place)
       this.textValue = place ? this.textValue : ''
       this.$emit('input', this.textValue)
       this.currentPlace = place
     },
-    onPlaceChange () {
+    onPlaceChange() {
       this.hasDownBeenPressed = false
       const place = this.autocomplete.getPlace()
 
@@ -234,7 +266,7 @@ export default {
       const pl = this.parsePlace(place)
       this.changePlace(pl)
     },
-    geolocate () {
+    geolocate() {
       if (this.enableGeolocation && !this.geolocateSet) {
         if (!navigator.geolocation) {
           return
@@ -262,7 +294,7 @@ export default {
         })
       }
     },
-    renderInput (h) {
+    renderInput(h) {
       return h('input', {
         attrs: {
           type: 'text',
@@ -273,13 +305,13 @@ export default {
       })
     }
   },
-  render (h) {
+  render(h) {
     const inputNode = this.$slots.default || [this.renderInput(h)]
     return h('div', {
       class: 'v-google-places'
     }, inputNode)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.enterPressListener) {
       window.google.maps.event.removeListener(this.enterPressListener)
     }
