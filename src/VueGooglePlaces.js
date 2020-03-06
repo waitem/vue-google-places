@@ -3,7 +3,11 @@ import loadJS from 'load-js'
 
 let loadModulePromise
 const loadModule = (options) => {
-  if (Object.prototype.hasOwnProperty.call(window, 'google')) {
+  // if window.google.maps.places already exists, then we're good to go
+  if (Object.prototype.hasOwnProperty.call(window, 'google') &&
+    Object.prototype.hasOwnProperty.call(window.google, 'maps') &&
+    Object.prototype.hasOwnProperty.call(window.google.maps, 'places')
+  ) {
     return Promise.resolve()
   }
   const opt = Object.assign({
@@ -197,6 +201,7 @@ export default {
         console.warn('Input element was not found in ' + this.component)
         return
       }
+      // See: https://developers.google.com/maps/documentation/javascript/reference/places-widget#Autocomplete
       this.autocomplete = new window.google.maps.places.Autocomplete(
         this.element,
         options
@@ -234,7 +239,7 @@ export default {
         returnData.latitude = place.geometry.location.lat()
         returnData.longitude = place.geometry.location.lng()
 
-        // additional fields, if specified as a prop
+        // additional fields, if specified in the 'placeResultFields' prop
         // will be available in the 'place' object
         // so no need to duplicate them in returnData
         // returnData.photos = place.photos
